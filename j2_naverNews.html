@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="UTF-8">
+    <title>j1_CDajax </title>
+    <script src="jQuery.js"></script>
+    <script> 
+        // JAVASCRIPT + DB 직접 연동은 안됨.
+        // DB를 XML파일로 연결해서 그걸 갖고오는 형식만 가능함.
+        $(function () {
+            // 버튼 클릭안하고 그냥 엔터 쳐도 검색가능하게 수정
+            $("input").keyup(function(e){
+                if(e.keyCode==13){
+                    // $(선택).trigger("이벤트 명"): 이벤트 강제 발생
+                    $("button").trigger("click");
+                }
+            });
+            $("button").click(function(){
+                var searchTxt=$("input").val();
+                $.ajax({
+                    // url:"주소(요청 파라미터부분 빼고 url)"
+                    url:"http://195.168.9.172:3524/naver.news.get",
+                    data:{q:searchTxt},
+                    success:function(xml){
+                        $(xml).find("item").each(function(i, item){
+                            var title = $(item).find("title").text();
+                            var desc = $(item).find("description").text();
+                            var row = "<tr><td>" + title + "</td><td>" + desc + "</td></tr>";
+                            $("table").append(row);
+                        });}});
+
+            });
+            // Cross Domain AJAX: 남의 데이터를 가져오는 ajax
+            // 서버 측에서 access-control-allow-origin 설정을 해뒀으면 가져오는게 가능함. 
+        });
+    </script>
+</head>
+<body> 
+    <input><button>검색</button>
+    <table border="1">
+        <tr>
+            <th>제목</th>
+            <th>내용</th>
+        </tr>
+        
+    </table>
+</body>
+</html>
